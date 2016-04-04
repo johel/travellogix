@@ -30,7 +30,6 @@
         var info = JSON.parse(body);
         initialTime = new Date();
         config.setToken(info.access_token);
-        console.log('body', info);
         return next();
       }else{
         return res.status(502).send({error:error, messsage:'It was not possible to authenticate Travellogix API'});
