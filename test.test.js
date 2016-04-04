@@ -1,40 +1,29 @@
 var superagent = require('superagent')
 var expect = require('expect.js')
 
-var postData = {
-  "Language": "ENG",
-  "Currency": "USD",
-  "destination": "MCO",
-  "DateFrom": "11/26/2016",
-  "DateTO": "11/29/2016",
-  "Occupancy": {
-   "AdultCount": "1",
-   "ChildCount": "1",
-   "ChildAges": ["10"]
-  }
-};
-
-describe('proxy express rest api server', function(){
+describe('test proxy express rest api server concerning token logic', function(){
 
   //    *********** assumes expiring time in config file to be 3000 milliseconds***********************
+   
+
   it('should ask for two different tokens', function(done){
-    this.timeout(5 * 1000);
+    this.timeout(6 * 1000);
     var firstToken, secondToken;
-    superagent.post('http://localhost:3000/')
-      .send(postData)
+    superagent.post('http://localhost:3000/auth')
       .end(function(e, res){
         if(!e){
-          firstToken = res.access_token;
+          console.log('body1', res.body);
+          firstToken = res.body.token;
         }
       });
 
       setTimeout(function(){
-        superagent.post('http://localhost:3000/')
-          .send(postData)
+        superagent.post('http://localhost:3000/auth')
           .end(function(e, res){
             if(!e){
-              secondToken = res.token;
-              expect(secondToken).not.to.equal(firstToken);
+              secondToken = res.body.token;
+              console.log('body2', res.body);
+              expect(secondToken).to.not.equal(firstToken);
             }
             done();
           })
@@ -42,27 +31,27 @@ describe('proxy express rest api server', function(){
   });
 
   it('should reuse the same token', function(done){
-    this.timeout(5 * 1000);
+    this.timeout(6 * 1000);
     var firstToken, secondToken;
-    superagent.post('http://localhost:3000/')
-      .send(postData)
+    superagent.post('http://localhost:3000/auth')
       .end(function(e, res){
         if(!e){
-          firstToken = res.access_token;
+          console.log('body1', res.body);
+          firstToken = res.body.token;
         }
       });
 
       setTimeout(function(){
-        superagent.post('http://localhost:3000/')
-          .send(postData)
+        superagent.post('http://localhost:3000/auth')
           .end(function(e, res){
             if(!e){
-              secondToken = res.token;
+              secondToken = res.body.token;
+              console.log('body2', res.body);
               expect(secondToken).to.equal(firstToken);
             }
             done();
           })
-      },2000);
+      },1000);
   });
 
   //********End of time test********************8

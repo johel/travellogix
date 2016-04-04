@@ -2,7 +2,7 @@
   'use strict'
   
   var request = require('request'),
-      config = require('./config');
+      config = require('../config');
 
 
   function getOptions(req){
@@ -25,9 +25,10 @@
     var options = getOptions(req);
     console.log('getContentOptions', options);
       request(options, function(error, response, body){
-        if (!error && response.statusCode == 200) {
+        console.log('status', response.statusCode);
+        if (!error && (response.statusCode == 200 || response.statusCode == 201)) {
           var info = JSON.parse(body);
-          res.send({result:info.Result[0].DateFrom.Date});
+          res.send(info);
         }else{
           return res.status(502).send({error:error, messsage:'There was an error during API Service Request'});
         }

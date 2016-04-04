@@ -16,6 +16,15 @@ var postData = {
 
 describe('proxy express rest api server', function(){
 
+  it('Request should get content after authentication', function(done){
+    superagent.post('http://localhost:3000/')
+      .send(postData)
+      .end(function(e, res){
+        expect(res.body.Result).to.be.an('array');
+        done();
+      })
+  });
+
   it('It should get error making request without authorization header', function(done){
     superagent.post('http://localhost:3000/failauth')
       .send(postData)
@@ -25,17 +34,14 @@ describe('proxy express rest api server', function(){
       })
   });
 
-  it('Should get access_token if there is no error in external service', function(done){
+  it('Should get access_token if there is no error on external service', function(done){
     superagent.post('http://localhost:3000/auth')
-      .send('grant_type=password&username=test1%40test2.com&password=Aa234567%21')
       .end(function(e, res){
         if(!e){
           expect(res.statusCode).to.equal(200);
-        }else{
-          expect(e).not.to.equal(null);
-          done();
         }
+        done();
       })
   });
 
-})
+});
